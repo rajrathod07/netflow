@@ -1,248 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Networking Guide</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <title>NetFlow — Networking Concepts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="layout-container">
-    <aside class="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-network-wired"></i> NetGuide
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="loader-blob"></div>
+        <div class="loader-brand">Net<span>Flow</span></div>
+        <div class="loader-sub">NETWORKING CONCEPTS</div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div id="progress"></div>
+
+    <!-- FLUID BACKGROUND -->
+    <div class="fluid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- NAV -->
+    <header class="glass-nav">
+        <div class="brand">
+            <div class="brand-dot"></div>
+            NetFlow
         </div>
-        <nav>
-            <a href="#basics"><i class="fa-solid fa-book-open"></i> Basics</a>
-            <a href="#devices"><i class="fa-solid fa-server"></i> Devices</a>
-            <a href="#characteristics"><i class="fa-solid fa-chart-line"></i> Characteristics</a>
-            <a href="#data-flow"><i class="fa-solid fa-route"></i> Data Flow</a>
-            <a href="#protocols"><i class="fa-solid fa-shield-halved"></i> Protocols</a>
-        </nav>
-    </aside>
+        <div class="search-wrapper">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="searchInput" placeholder="Search concepts..." autocomplete="off">
+            <button class="search-clear" id="searchClear" title="Clear search">✕</button>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn" id="themeToggle" title="Toggle theme">🌙</button>
+        </div>
+    </header>
 
-    <main class="content">
-        <header class="hero slide-up">
-            <h1 id="basics">Networking Architecture</h1>
-            <p>An interactive, animated reference guide to data communication.</p>
-        </header>
+    <!-- LAYOUT -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="glass-sidebar">
+            <div class="sidebar-label">Chapters</div>
+            <nav class="nav-links" id="sidebarNav">
+                <a href="#basics" class="active" data-section="basics">
+                    <span class="nav-icon">◈</span> Basics
+                </a>
+                <a href="#devices" data-section="devices">
+                    <span class="nav-icon">⬡</span> Devices
+                </a>
+                <a href="#traits" data-section="traits">
+                    <span class="nav-icon">◎</span> Traits
+                </a>
+                <a href="#flow" data-section="flow">
+                    <span class="nav-icon">⟿</span> Data Flow
+                </a>
+                <a href="#protocols" data-section="protocols">
+                    <span class="nav-icon">⊟</span> Protocols
+                </a>
+            </nav>
 
-        <section class="callout callout-blue slide-up">
-            <i class="fa-solid fa-globe icon"></i>
-            <div class="callout-text">
-                <strong>Networking = connecting devices so they can share data.</strong>
-            </div>
-        </section>
-
-        <section class="callout callout-yellow slide-up">
-            <i class="fa-solid fa-check-circle icon"></i>
-            <div class="callout-text">
-                <strong>Two must-remember words:</strong>
-                <ul>
-                    <li><strong>Node:</strong> Any device (phone, laptop, printer)</li>
-                    <li><strong>Communication link:</strong> The path data uses (Wi‑Fi or cable)</li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="devices" class="section-block slide-up">
-            <h2><i class="fa-solid fa-microchip"></i> Devices in a Network</h2>
-            
-            <div class="callout callout-teal">
-                <i class="fa-solid fa-lightbulb icon"></i>
-                <div class="callout-text">
-                    <strong>Quick trick:</strong> End devices <em>use</em> data • Intermediary devices <em>move</em> data.
+            <div class="progress-section">
+                <div class="progress-title">Your progress</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
                 </div>
+                <div class="progress-count" id="progressCount">0 / 5 done</div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="content" id="mainContent">
+            <div class="content-intro">
+                <h1>Learn <em>Networking</em><br>Fundamentals</h1>
+                <p>A fluid, interactive guide to how devices connect, communicate, and share data across the modern
+                    internet.</p>
             </div>
 
-            <h3>End Devices (Use Data)</h3>
-            <div class="grid-cards">
-                <div class="card"><i class="fa-solid fa-desktop"></i> Desktop / Laptop</div>
-                <div class="card"><i class="fa-solid fa-mobile-screen"></i> Mobile Phone</div>
-                <div class="card"><i class="fa-solid fa-tablet-screen-button"></i> Tablet</div>
-                <div class="card"><i class="fa-solid fa-print"></i> Printer</div>
-                <div class="card"><i class="fa-solid fa-server"></i> Server</div>
+            <!-- NO RESULTS -->
+            <div class="no-results" id="noResults">
+                <div class="no-results-icon">◌</div>
+                <h3>Nothing found</h3>
+                <p>Try a different keyword — maybe "router", "protocol", or "duplex".</p>
             </div>
 
-            <h3 style="margin-top: 2rem;">Intermediary Devices (Move Data)</h3>
-            <p class="text-muted">These devices sit in the middle and route traffic to the correct destination.</p>
-            
-            <div class="accordion-group">
-                <details class="accordion">
-                    <summary><i class="fa-solid fa-shuffle"></i> Switch (Inside LAN)</summary>
-                    <div class="details-content">Connects many devices in the same local network and forwards data to the correct device based on MAC address.</div>
-                </details>
-                <details class="accordion">
-                    <summary><i class="fa-solid fa-route"></i> Router (Between networks)</summary>
-                    <div class="details-content">Connects LAN ↔ Internet and forwards data to the next network based on IP address.</div>
-                </details>
-                <details class="accordion">
-                    <summary><i class="fa-solid fa-wifi"></i> Wireless Router</summary>
-                    <div class="details-content">Acts as a router, switch, and wireless access point in one device.</div>
-                </details>
-                <details class="accordion">
-                    <summary><i class="fa-solid fa-plug"></i> Modem</summary>
-                    <div class="details-content">Modulates and demodulates signals; connects your router to your ISP line (fiber/cable/DSL).</div>
-                </details>
-            </div>
-        </section>
-
-        <section id="characteristics" class="section-block slide-up">
-            <h2><i class="fa-solid fa-sliders"></i> Network Characteristics</h2>
-            <p class="text-muted">The core qualities of a reliable and scalable network infrastructure.</p>
-
-            <div class="grid-cards-large">
-                <div class="card feature-card">
-                    <i class="fa-solid fa-heart-pulse accent-icon"></i>
-                    <h4>Fault Tolerance</h4>
-                    <p>The network keeps working even if one part fails. If a link goes down, traffic is rerouted.</p>
-                </div>
-                <div class="card feature-card">
-                    <i class="fa-solid fa-up-right-and-down-left-from-center accent-icon"></i>
-                    <h4>Scalability</h4>
-                    <p>Can handle more users or devices being added without experiencing a noticeable drop in performance.</p>
-                </div>
-                <div class="card feature-card">
-                    <i class="fa-solid fa-list-ol accent-icon"></i>
-                    <h4>Quality of Service (QoS)</h4>
-                    <p>Prioritizes time-sensitive traffic (like VoIP or video calls) over less urgent traffic (like emails).</p>
-                </div>
-                <div class="card feature-card">
-                    <i class="fa-solid fa-shield-halved accent-icon"></i>
-                    <h4>Security (CIA Triad)</h4>
-                    <p><strong>Confidentiality</strong> (encryption), <strong>Integrity</strong> (hashing), and <strong>Availability</strong> (uptime).</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="data-flow" class="section-block slide-up">
-            <h2><i class="fa-solid fa-right-left"></i> Data Flow Animations</h2>
-            <p class="text-muted">Direction of communication between two nodes.</p>
-
-            <div class="diagram-box">
-                <h4>Simplex (One-way only)</h4>
-                <p class="text-muted small">Example: Keyboard sending data to a CPU.</p>
-                <div class="animated-diagram">
-                    <div class="node"><i class="fa-solid fa-keyboard"></i> Sender</div>
-                    <div class="connection-line">
-                        <div class="packet simplex-packet"></div>
+            <!-- §1 BASICS -->
+            <section id="basics" class="chapter glass-card" data-index="0">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-num">01</div>
+                        <h2>Networking Basics</h2>
                     </div>
-                    <div class="node"><i class="fa-solid fa-microchip"></i> Receiver</div>
+                    <button class="done-btn" data-section="0">
+                        <span class="done-check">○</span>
+                        <span>Mark done</span>
+                    </button>
                 </div>
-            </div>
 
-            <div class="diagram-box">
-                <h4>Half-Duplex (Two-way, but one at a time)</h4>
-                <p class="text-muted small">Example: Walkie-talkies. You must wait for the channel to be clear.</p>
-                <div class="animated-diagram">
-                    <div class="node"><i class="fa-solid fa-walkie-talkie"></i> Device A</div>
-                    <div class="connection-line dashed">
-                        <div class="packet half-duplex-packet"></div>
+                <div class="glass-callout blue-tint">
+                    <div class="callout-icon">⬡</div>
+                    <div class="callout-text">
+                        <strong>Networking = connecting devices so they can share data.</strong>
+                        <p>Think of it like building roads between houses — data travels the roads instead of people.
+                        </p>
                     </div>
-                    <div class="node"><i class="fa-solid fa-walkie-talkie"></i> Device B</div>
                 </div>
-            </div>
 
-            <div class="diagram-box">
-                <h4>Full-Duplex (Two-way, simultaneously)</h4>
-                <p class="text-muted small">Example: Telephone call. Both parties can send and receive at once.</p>
-                <div class="animated-diagram">
-                    <div class="node"><i class="fa-solid fa-phone"></i> Phone A</div>
-                    <div class="connection-line double">
-                        <div class="packet full-duplex-packet-1"></div>
-                        <div class="packet full-duplex-packet-2"></div>
+                <div class="glass-callout yellow-tint mt-2">
+                    <div class="callout-icon">◇</div>
+                    <div class="callout-text">
+                        <strong>Two essential terms to remember:</strong>
+                        <ul class="clean-list mt-1">
+                            <li><strong>Node:</strong> Any device on the network — your phone, a laptop, a printer, a
+                                server.</li>
+                            <li><strong>Communication Link:</strong> The path data travels — Wi-Fi waves or physical
+                                cables.</li>
+                        </ul>
                     </div>
-                    <div class="node"><i class="fa-solid fa-phone"></i> Phone B</div>
                 </div>
-            </div>
-        </section>
 
-        <section id="protocols" class="section-block slide-up">
-            <h2><i class="fa-solid fa-satellite-dish"></i> Message Delivery Options</h2>
-            
-            <div class="diagram-box delivery-diagrams">
-                <div class="delivery-row">
-                    <div class="delivery-info">
-                        <h4>Unicast</h4>
-                        <p class="text-muted small">1 Sender to 1 Specific Receiver</p>
-                    </div>
-                    <div class="animated-diagram multi-diagram">
-                        <div class="node center-node"><i class="fa-solid fa-server"></i></div>
-                        <div class="network-lines unicast-lines">
-                            <div class="line active"><div class="packet go-right"></div></div>
-                            <div class="line inactive"></div>
-                            <div class="line inactive"></div>
+                <div class="qa-section">
+                    <button class="qa-toggle" onclick="toggleQA(this)">
+                        <span>⚡</span> Quick Check — Test yourself
+                    </button>
+                    <div class="qa-body">
+                        <div class="qa-q">What term describes any device connected to a network?</div>
+                        <div class="qa-options">
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Communication Link</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, true)">Node</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Protocol</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Packet</div>
                         </div>
-                        <div class="receivers">
-                            <div class="node target"><i class="fa-solid fa-desktop"></i></div>
-                            <div class="node dim"><i class="fa-solid fa-desktop"></i></div>
-                            <div class="node dim"><i class="fa-solid fa-desktop"></i></div>
+                        <div class="qa-result" id="qa-result-0"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- §2 DEVICES -->
+            <section id="devices" class="chapter glass-card" data-index="1">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-num">02</div>
+                        <h2>Devices in a Network</h2>
+                    </div>
+                    <button class="done-btn" data-section="1">
+                        <span class="done-check">○</span>
+                        <span>Mark done</span>
+                    </button>
+                </div>
+
+                <p class="soft-text"><strong>Quick rule:</strong> End devices <em>use</em> data. Intermediary devices
+                    <em>move</em> data.</p>
+
+                <div class="grid-2 mt-2">
+                    <div class="glass-panel">
+                        <h3><span class="accent-icon">◫</span> End Devices</h3>
+                        <p class="soft-text" style="font-size:0.82rem;margin-bottom:12px">Where data starts and stops
+                            its journey.</p>
+                        <ul class="clean-list">
+                            <li>Desktop / Laptop</li>
+                            <li>Mobile Phone / Tablet</li>
+                            <li>Printer / Smart TV</li>
+                            <li>Server</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-panel">
+                        <h3><span class="accent-icon">⇄</span> Intermediary Devices</h3>
+                        <p class="soft-text" style="font-size:0.82rem;margin-bottom:12px">The traffic directors of your
+                            network.</p>
+                        <div class="glass-accordion">
+                            <details>
+                                <summary><span>⬡</span> Switch</summary>
+                                <p>Connects devices in the same building (LAN). Knows exactly which port to send data
+                                    to, minimizing traffic.</p>
+                            </details>
+                            <details>
+                                <summary><span>⟿</span> Router</summary>
+                                <p>Connects your local network to the internet — like a post office that forwards
+                                    letters to the right city.</p>
+                            </details>
+                            <details>
+                                <summary><span>◎</span> Modem</summary>
+                                <p>Translates internet signals (from your ISP) into a format your router understands,
+                                    and vice versa.</p>
+                            </details>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="delivery-row">
-                    <div class="delivery-info">
-                        <h4>Multicast</h4>
-                        <p class="text-muted small">1 Sender to a Selected Group</p>
+            <!-- §3 TRAITS -->
+            <section id="traits" class="chapter glass-card" data-index="2">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-num">03</div>
+                        <h2>Network Characteristics</h2>
                     </div>
-                    <div class="animated-diagram multi-diagram">
-                        <div class="node center-node"><i class="fa-solid fa-server"></i></div>
-                        <div class="network-lines multicast-lines">
-                            <div class="line active"><div class="packet go-right"></div></div>
-                            <div class="line inactive"></div>
-                            <div class="line active"><div class="packet go-right"></div></div>
+                    <button class="done-btn" data-section="2">
+                        <span class="done-check">○</span>
+                        <span>Mark done</span>
+                    </button>
+                </div>
+                <p class="soft-text">The four pillars that define how reliable, scalable, and secure a network is.</p>
+
+                <div class="grid-2 mt-2">
+                    <div class="glass-feature">
+                        <div class="feature-icon">♡</div>
+                        <h4>Fault Tolerance</h4>
+                        <p>If one cable breaks, the network reroutes automatically. Like a GPS finding an alternate path
+                            when the road is closed.</p>
+                    </div>
+                    <div class="glass-feature">
+                        <div class="feature-icon">⤢</div>
+                        <h4>Scalability</h4>
+                        <p>Add 1,000 new devices without slowing down existing ones. Good architecture grows without
+                            crumbling.</p>
+                    </div>
+                    <div class="glass-feature">
+                        <div class="feature-icon">◉</div>
+                        <h4>Quality of Service (QoS)</h4>
+                        <p>VIP treatment for video calls — they get priority bandwidth so they don't stutter when
+                            someone downloads a large file.</p>
+                    </div>
+                    <div class="glass-feature">
+                        <div class="feature-icon">⊛</div>
+                        <h4>Security (CIA Triad)</h4>
+                        <p>Protects data via <strong>Confidentiality</strong> (who sees it), <strong>Integrity</strong>
+                            (isn't altered), and <strong>Availability</strong> (always accessible).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- §4 DATA FLOW -->
+            <section id="flow" class="chapter glass-card" data-index="3">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-num">04</div>
+                        <h2>Data Flow Topologies</h2>
+                    </div>
+                    <button class="done-btn" data-section="3">
+                        <span class="done-check">○</span>
+                        <span>Mark done</span>
+                    </button>
+                </div>
+                <p class="soft-text">How data moves — the direction and simultaneity of communication between devices.
+                </p>
+
+                <div class="diagram-container mt-2">
+                    <div class="diagram-row">
+                        <div class="diagram-info">
+                            <h4>Simplex</h4>
+                            <p>One-way only, no response.</p>
+                            <span class="badge">Keyboard → PC</span>
                         </div>
-                        <div class="receivers">
-                            <div class="node target"><i class="fa-solid fa-desktop"></i></div>
-                            <div class="node dim"><i class="fa-solid fa-desktop"></i></div>
-                            <div class="node target"><i class="fa-solid fa-desktop"></i></div>
+                        <div class="liquid-visual">
+                            <div class="glass-node">⌨</div>
+                            <div class="liquid-path">
+                                <div class="liquid-pipe"></div>
+                                <div class="drop drop-right"></div>
+                            </div>
+                            <div class="glass-node">💻</div>
+                        </div>
+                    </div>
+
+                    <div class="diagram-row">
+                        <div class="diagram-info">
+                            <h4>Half-Duplex</h4>
+                            <p>Two-way, but takes turns.</p>
+                            <span class="badge">Walkie-Talkie</span>
+                        </div>
+                        <div class="liquid-visual">
+                            <div class="glass-node">📻</div>
+                            <div class="liquid-path dashed-path">
+                                <div class="liquid-pipe"></div>
+                                <div class="drop drop-bounce"></div>
+                            </div>
+                            <div class="glass-node">📻</div>
+                        </div>
+                    </div>
+
+                    <div class="diagram-row">
+                        <div class="diagram-info">
+                            <h4>Full-Duplex</h4>
+                            <p>Simultaneous both ways.</p>
+                            <span class="badge">Phone Call</span>
+                        </div>
+                        <div class="liquid-visual">
+                            <div class="glass-node">📞</div>
+                            <div class="double-path liquid-path">
+                                <div class="liquid-pipe"></div>
+                                <div class="liquid-pipe"></div>
+                                <div class="drop drop-right" style="top:3px;transform:none"></div>
+                                <div class="drop drop-left" style="bottom:3px;top:auto;transform:none"></div>
+                            </div>
+                            <div class="glass-node">📞</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="delivery-row">
-                    <div class="delivery-info">
-                        <h4>Broadcast</h4>
-                        <p class="text-muted small">1 Sender to EVERYONE on the network</p>
-                    </div>
-                    <div class="animated-diagram multi-diagram">
-                        <div class="node center-node"><i class="fa-solid fa-server"></i></div>
-                        <div class="network-lines broadcast-lines">
-                            <div class="line active"><div class="packet go-right"></div></div>
-                            <div class="line active"><div class="packet go-right"></div></div>
-                            <div class="line active"><div class="packet go-right"></div></div>
+                <div class="qa-section" style="margin-top:20px">
+                    <button class="qa-toggle" onclick="toggleQA(this)">
+                        <span>⚡</span> Quick Check — Which mode is a phone call?
+                    </button>
+                    <div class="qa-body">
+                        <div class="qa-q">A regular phone call allows both people to talk at the same time. What type of
+                            data flow is this?</div>
+                        <div class="qa-options">
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Simplex</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Half-Duplex</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, true)">Full-Duplex</div>
                         </div>
-                        <div class="receivers">
-                            <div class="node target"><i class="fa-solid fa-desktop"></i></div>
-                            <div class="node target"><i class="fa-solid fa-desktop"></i></div>
-                            <div class="node target"><i class="fa-solid fa-desktop"></i></div>
-                        </div>
+                        <div class="qa-result" id="qa-result-3"></div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
-</div>
+            <!-- §5 PROTOCOLS -->
+            <section id="protocols" class="chapter glass-card" data-index="4">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-num">05</div>
+                        <h2>Protocols — The Rules</h2>
+                    </div>
+                    <button class="done-btn" data-section="4">
+                        <span class="done-check">○</span>
+                        <span>Mark done</span>
+                    </button>
+                </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
+                <div class="glass-callout purple-tint">
+                    <div class="callout-icon">⊟</div>
+                    <div class="callout-text">
+                        <p>A protocol governs <strong>What</strong> is communicated, <strong>How</strong> it's
+                            formatted, and <strong>When</strong> it's sent — like a language both devices agree to
+                            speak.</p>
+                    </div>
+                </div>
 
-        document.querySelectorAll('.slide-up').forEach((el) => {
-            observer.observe(el);
-        });
-    });
-</script>
+                <div class="grid-2 mt-2">
+                    <div class="glass-panel">
+                        <h3><span class="accent-icon">◈</span> Protocol Elements</h3>
+                        <ul class="clean-list mt-1">
+                            <li><strong>Encoding:</strong> Converting text/video into digital signals that travel over
+                                cables or air.</li>
+                            <li><strong>Encapsulation:</strong> Wrapping data in digital envelopes with addressing info.
+                            </li>
+                            <li><strong>Message Size:</strong> Breaking large files into manageable chunks called
+                                packets.</li>
+                            <li><strong>Timing:</strong> Rules for when to send and how fast — avoiding data collisions.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="glass-panel">
+                        <h3><span class="accent-icon">⇶</span> Delivery Methods</h3>
+                        <ul class="clean-list mt-1">
+                            <li><strong>Unicast:</strong> Sending to exactly one specific device — like a direct
+                                message.</li>
+                            <li><strong>Multicast:</strong> Sending to a selected group — like a group chat.</li>
+                            <li><strong>Broadcast:</strong> Shouting to every device on the network — like a PA system.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="qa-section" style="margin-top:20px">
+                    <button class="qa-toggle" onclick="toggleQA(this)">
+                        <span>⚡</span> Quick Check — Delivery methods
+                    </button>
+                    <div class="qa-body">
+                        <div class="qa-q">Which delivery method sends data to ALL devices on a network simultaneously?
+                        </div>
+                        <div class="qa-options">
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Unicast</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, false)">Multicast</div>
+                            <div class="qa-opt" onclick="checkAnswer(this, true)">Broadcast</div>
+                        </div>
+                        <div class="qa-result" id="qa-result-4"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- FAB GROUP -->
+    <div class="fab-group">
+        <button class="glass-fab scroll-top" id="scrollTop" title="Back to top"
+            onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+        <button class="glass-fab" id="themeToggle2" title="Toggle theme">🌙</button>
+    </div>
+
+    <!-- BOTTOM NAV (mobile) -->
+    <nav class="bottom-nav">
+        <a href="#basics" class="bnav-item active" data-section="basics"><span class="bnav-icon">◈</span>Basics</a>
+        <a href="#devices" class="bnav-item" data-section="devices"><span class="bnav-icon">⬡</span>Devices</a>
+        <a href="#traits" class="bnav-item" data-section="traits"><span class="bnav-icon">◎</span>Traits</a>
+        <a href="#flow" class="bnav-item" data-section="flow"><span class="bnav-icon">⟿</span>Flow</a>
+        <a href="#protocols" class="bnav-item" data-section="protocols"><span class="bnav-icon">⊟</span>Rules</a>
+    </nav>
 
 </body>
+<script src="script.js"></script>
 </html>
