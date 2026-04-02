@@ -38,9 +38,8 @@
             
             setTimeout(() => { 
                 l.style.display = 'none'; 
-                // Gentle, slow cascade fade-in for chapters
                 document.querySelectorAll('.gc').forEach((c, i) => {
-                    setTimeout(() => c.classList.add('vis'), i * 180);
+                    setTimeout(() => c.classList.add('vis'), i * 120); 
                 });
             }, 1200); 
         }, 1200);
@@ -66,7 +65,6 @@
         smoothScrollTo(top);
     }
 
-    // Elegant, soft pulse instead of a hard, fast bounce
     const elegantAnim = [
         { transform: 'scale(1)' },
         { transform: 'scale(0.96)' },
@@ -78,8 +76,6 @@
     /* ==========================================
        4. BUILD UI ELEMENTS (Sidebars)
        ========================================== */
-    
-    // Left Sidebar (Folders)
     const navTree = document.getElementById('navTree');
     const cats = {};
     chapters.forEach(c => { 
@@ -104,18 +100,19 @@
         folder.appendChild(btn); folder.appendChild(fi); navTree.appendChild(folder);
     });
 
-    // Mobile Bottom Nav
     const botNav = document.getElementById('botNav');
-    const bIcons = ['◈', '⬡', '◎', '⟿', '⊟', '🏠', '📍', '🌐', '🥞', '🛡️']; 
+    const bIcons = ['⬡', '⇄', '◉', '⟿', '⊟', '🌍', '📍', '🎭', '🏢', '🕸️', '🥞', '🛡️', '🌊', '☁️']; 
     chapters.forEach((c, i) => {
-        if(i >= 5 && botNav.children.length >= 5) return; 
         const a = document.createElement('a'); a.className = 'bni'; a.href = '#' + c.id; a.dataset.section = c.id;
-        a.innerHTML = `<span class="bic">${bIcons[i] || '·'}</span>${chTitles[i].split(' ')[0]}`;
+        let shortName = chTitles[i].split(' ')[0];
+        if(shortName === "Public") shortName = "NAT";
+        if(shortName === "The") shortName = chTitles[i].split(' ')[1] || "Net";
+        
+        a.innerHTML = `<span class="bic">${bIcons[i] || '·'}</span>${shortName}`;
         a.addEventListener('click', e => { e.preventDefault(); scrollToElement(c.id); });
         botNav.appendChild(a);
     });
 
-    // Right Sidebar (Outline)
     const outlineList = document.getElementById('outlineList');
     chapters.forEach((c, i) => {
         const a = document.createElement('a'); a.className = 'oli'; a.href = '#' + c.id; a.dataset.section = c.id;
@@ -125,32 +122,7 @@
         outlineList.appendChild(a);
     });
 
-    // Comprehensive, Beginner-Friendly Glossary
-    const glossary = [
-        { t: 'Bandwidth', d: 'The maximum capacity of a network connection, like the total number of lanes on a highway.' },
-        { t: 'DHCP', d: 'The "Receptionist" service that automatically hands out temporary IP addresses to devices when they join a Wi-Fi network.' },
-        { t: 'DNS', d: 'The internet\'s phonebook. It instantly translates human words like "google.com" into computer-readable IP addresses.' },
-        { t: 'Firewall', d: 'A security guard that monitors and blocks dangerous hackers or bad traffic from entering your private network.' },
-        { t: 'IP Address', d: 'Your device\'s temporary, logical location address on the internet. Used to route data to you globally.' },
-        { t: 'Latency (Ping)', d: 'The physical time delay for data to travel from sender to receiver. High latency causes frustrating visual "lag".' },
-        { t: 'MAC Address', d: 'The permanent, physical hardware serial number burned into your device at the factory.' },
-        { t: 'Node', d: 'Any physical device connected to a network, like a smartphone, laptop, printer, or server.' },
-        { t: 'Packet', d: 'A tiny, chopped-up chunk of data wrapped with addressing info, ready to be sent across the internet.' },
-        { t: 'Protocol', d: 'A strict set of mathematical rules computers use to format, send, and understand data seamlessly.' },
-        { t: 'Router', d: 'The smart post office that directs packets between completely different networks (like your home to the global internet).' },
-        { t: 'Switch', d: 'Connects devices within the same local network (LAN), smartly sending data only to the exact correct port.' },
-        { t: 'VPN', d: 'A secure, heavily encrypted tunnel over a public network, masking your true physical location and traffic.' }
-    ];
-    
-    const glossList = document.getElementById('glossList');
-    glossList.innerHTML = ''; // Clear out the hardcoded HTML ones
-    glossary.forEach(({ t, d }) => {
-        const div = document.createElement('div'); div.className = 'gi';
-        div.innerHTML = `<div class="gt">${t}<span class="gar">›</span></div><div class="gd"><p>${d}</p></div>`;
-        glossList.appendChild(div);
-    });
-
-    // Build Prev/Next buttons
+    // Prev/Next buttons
     document.querySelectorAll('.cnav').forEach(nav => {
         const idx = +nav.dataset.idx;
         const prev = idx > 0
@@ -169,8 +141,6 @@
     /* ==========================================
        5. ORGANIC LERPING (Scroll + Blobs)
        ========================================== */
-    
-    // Smooth Scroll Progress
     const sBar = document.getElementById('sProgress');
     const fabTop = document.getElementById('fabTop');
     let scrollTgt = 0, scrollCur = 0;
@@ -178,21 +148,15 @@
     function animateScroll() {
         const d = document.documentElement;
         scrollTgt = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
-        
-        // Lerp equation for silky smooth catch-up
         scrollCur += (scrollTgt - scrollCur) * 0.08; 
-        
         sBar.style.width = Math.max(0, Math.min(scrollCur, 100)) + '%';
         fabTop.classList.toggle('on', scrollCur > 8);
-        
         requestAnimationFrame(animateScroll);
     }
-    animateScroll(); // Start the loop
+    animateScroll(); 
 
-    // Floating Parallax Blobs
     const blobs = document.querySelectorAll('.blob');
-    let mouseX = 0, mouseY = 0;
-    let blobX = 0, blobY = 0;
+    let mouseX = 0, mouseY = 0, blobX = 0, blobY = 0;
 
     document.addEventListener('mousemove', e => {
         mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -200,17 +164,15 @@
     }, { passive: true });
 
     function animateBlobs() {
-        // Very slow lerp (0.02) creates a deeply peaceful, floating delay
         blobX += (mouseX - blobX) * 0.02;
         blobY += (mouseY - blobY) * 0.02;
-
         blobs.forEach((b, i) => { 
             const f = (i + 1) * 12; 
             b.style.transform = `translate(${blobX * f}px, ${blobY * f}px)`; 
         });
         requestAnimationFrame(animateBlobs);
     }
-    animateBlobs(); // Start the loop
+    animateBlobs(); 
 
     /* ==========================================
        6. CHAPTER OBSERVATION
@@ -222,18 +184,89 @@
     
     const secObs = new IntersectionObserver(entries => {
         entries.forEach(e => { 
-            if (e.isIntersecting) {
-                setActive(e.target.id);
-            } 
+            if (e.isIntersecting) setActive(e.target.id);
         });
     }, { threshold: 0.15, rootMargin: `-${NAV_H() + 20}px 0px -50% 0px` });
     
     chapters.forEach(s => secObs.observe(s));
 
     /* ==========================================
-       7. PROGRESS TRACKING (Mark Done)
+       7. DYNAMIC CELEBRATION INJECTION
        ========================================== */
-    const DK = 'nf-done5'; 
+    function injectCelebration() {
+        // Inject CSS for the animation so you don't have to touch style.css
+        const style = document.createElement('style');
+        style.textContent = `
+            #nfFinish { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); opacity: 0; pointer-events: none; transition: opacity 0.6s ease; overflow: hidden; }
+            #nfFinish.show { opacity: 1; pointer-events: all; }
+            
+            /* Rings */
+            .nf-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid var(--accent); opacity: 0; }
+            #nfFinish.show .nf-ring-1 { animation: nfRing 2s ease-out forwards; }
+            #nfFinish.show .nf-ring-2 { animation: nfRing 2.5s ease-out 0.2s forwards; border-color: var(--accent2); }
+            #nfFinish.show .nf-ring-3 { animation: nfRing 3s ease-out 0.4s forwards; border-color: var(--accent3); }
+            @keyframes nfRing { 0% { width: 0; height: 0; opacity: 1; border-width: 15px; } 100% { width: 150vw; height: 150vw; opacity: 0; border-width: 1px; } }
+            
+            /* Side Bounces */
+            .nf-bounce { position: absolute; font-size: 6rem; opacity: 0; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); }
+            .nf-bounce-l { top: 50%; left: -150px; }
+            .nf-bounce-r { top: 50%; right: -150px; }
+            #nfFinish.show .nf-bounce-l { animation: nfSpringL 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards; }
+            #nfFinish.show .nf-bounce-r { animation: nfSpringR 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.7s forwards; }
+            @keyframes nfSpringL { 0% { left: -150px; opacity: 0; transform: translateY(-50%) rotate(-45deg) scale(0.5); } 100% { left: 10%; opacity: 1; transform: translateY(-50%) rotate(15deg) scale(1); } }
+            @keyframes nfSpringR { 0% { right: -150px; opacity: 0; transform: translateY(-50%) rotate(45deg) scale(0.5); } 100% { right: 10%; opacity: 1; transform: translateY(-50%) rotate(-15deg) scale(1); } }
+            
+            /* Center Card */
+            .nf-card { text-align: center; z-index: 10; transform: scale(0.5) translateY(50px); opacity: 0; background: var(--panel); border: 1px solid var(--glass-border); padding: 50px 40px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-width: 500px; width: 90%; }
+            #nfFinish.show .nf-card { animation: nfPop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.9s forwards; }
+            @keyframes nfPop { to { transform: scale(1) translateY(0); opacity: 1; } }
+            
+            .nf-title { font-family: 'DM Serif Display', serif; font-size: 2.8rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; line-height: 1.1; }
+            .nf-msg { font-size: 1.05rem; color: var(--text-2); line-height: 1.7; margin-bottom: 35px; }
+            
+            .nf-btn { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; padding: 14px 36px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s; box-shadow: 0 8px 25px var(--accent-glow); }
+            .nf-btn:hover { transform: scale(1.08) translateY(-3px); box-shadow: 0 15px 35px var(--accent-glow); }
+            
+            /* Mobile fixes for bounces */
+            @media(max-width: 900px) { 
+                .nf-bounce { font-size: 4rem; }
+                .nf-bounce-l { left: 5%; top: 15%; animation-name: nfSpringLMob !important; } 
+                .nf-bounce-r { right: 5%; top: 85%; animation-name: nfSpringRMob !important; } 
+                @keyframes nfSpringLMob { 0% { top: -100px; opacity: 0; } 100% { top: 12%; opacity: 1; transform: rotate(15deg); } } 
+                @keyframes nfSpringRMob { 0% { top: 120%; opacity: 0; } 100% { top: 88%; opacity: 1; transform: rotate(-15deg); } } 
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inject HTML
+        const overlay = document.createElement('div');
+        overlay.id = 'nfFinish';
+        overlay.innerHTML = `
+            <div class="nf-ring nf-ring-1"></div>
+            <div class="nf-ring nf-ring-2"></div>
+            <div class="nf-ring nf-ring-3"></div>
+            <div class="nf-bounce nf-bounce-l">🚀</div>
+            <div class="nf-bounce nf-bounce-r">🏆</div>
+            <div class="nf-card">
+                <div class="nf-title">Course Complete!</div>
+                <div class="nf-msg">Incredible work! You've successfully mastered the foundations of computer networking.<br><br>You now understand how the digital world routes data, connects devices, and stays secure. Keep building, keep learning, and stay curious!</div>
+                <button class="nf-btn" id="nfCloseBtn">Awesome!</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('nfCloseBtn').addEventListener('click', () => {
+            overlay.classList.remove('show');
+        });
+    }
+
+    // Inject immediately on load
+    injectCelebration();
+
+    /* ==========================================
+       8. PROGRESS TRACKING (Mark Done)
+       ========================================== */
+    const DK = 'nf-done7'; 
     let done = new Set(JSON.parse(localStorage.getItem(DK) || '[]'));
     
     function saveDone() { localStorage.setItem(DK, JSON.stringify([...done])); }
@@ -249,6 +282,15 @@
             const nd = document.querySelector(`.ni[data-section="${ch.id}"] .nd`);
             if (nd) nd.classList.toggle('dn', done.has(idx));
         });
+
+        // TRIGGER THE CELEBRATION
+        if (c === TOTAL && !localStorage.getItem('nf-celebrated')) {
+            setTimeout(() => {
+                document.getElementById('nfFinish').classList.add('show');
+                // Save flag so it doesn't pop up every time they refresh the page
+                localStorage.setItem('nf-celebrated', 'true');
+            }, 800); // Waits for the button "bounce" animation to finish first
+        }
     }
 
     document.querySelectorAll('.db').forEach(btn => {
@@ -279,7 +321,7 @@
     updateUI();
 
     /* ==========================================
-       8. INTERACTIVE QUIZ ENGINE
+       9. INTERACTIVE QUIZ ENGINE
        ========================================== */
     const softShakeAnim = [
         { transform: 'translateX(0)' },
@@ -313,7 +355,7 @@
     });
 
     /* ==========================================
-       9. ADVANCED SEARCH ENGINE (Beautiful Highlights)
+       10. ADVANCED SEARCH ENGINE
        ========================================== */
     const sInp = document.getElementById('sInput');
     const sCl = document.getElementById('sClear');
@@ -342,7 +384,6 @@
                     const mk = document.createElement('mark'); 
                     mk.textContent = m[0]; 
                     
-                    // Apply a soft, modern inline style to override any ugly default yellow CSS
                     mk.style.background = 'rgba(129, 140, 248, 0.2)';
                     mk.style.color = 'inherit';
                     mk.style.borderRadius = '4px';
@@ -350,7 +391,6 @@
                     mk.style.boxShadow = '0 0 8px rgba(129, 140, 248, 0.3)';
 
                     f.appendChild(mk); 
-                    
                     if (onFirstMatch) onFirstMatch(mk);
                     l = rx.lastIndex; 
                 }
@@ -367,7 +407,7 @@
                 }
 
                 n.replaceWith(f);
-            } else if (n.nodeType === 1 && !['SCRIPT', 'STYLE', 'MARK', 'SVG'].includes(n.tagName)) {
+            } else if (n.nodeType === 1 && !['SCRIPT', 'STYLE', 'MARK', 'SVG'].includes(n.tagName) && !n.closest('svg')) {
                 hilite(n, rx, onFirstMatch);
             }
         });
