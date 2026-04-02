@@ -1547,14 +1547,14 @@ body {
 }
 
 mark {
-    background: rgba(218, 175, 40, .26);
+    background: rgba(218, 176, 40, 0);
     color: inherit;
     border-radius: 3px;
     padding: 1px 2px
 }
 
 [data-theme="dark"] mark {
-    background: rgba(218, 175, 40, .17)
+    background: rgba(218, 176, 40, 0)
 }
 
 /* FAB */
