@@ -58,7 +58,8 @@
 }
 
 html {
-    font-size: 16px
+    font-size: 16px;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -99,31 +100,16 @@ body {
 }
 
 @keyframes mL {
-
     0%,
-    100% {
-        border-radius: 60% 40% 55% 45%/45% 55% 40% 60%
-    }
-
-    33% {
-        border-radius: 45% 55% 35% 65%/65% 35% 55% 45%
-    }
-
-    66% {
-        border-radius: 55% 45% 65% 35%/35% 65% 45% 55%
-    }
+    100% { border-radius: 60% 40% 55% 45%/45% 55% 40% 60% }
+    33% { border-radius: 45% 55% 35% 65%/65% 35% 55% 45% }
+    66% { border-radius: 55% 45% 65% 35%/35% 65% 45% 55% }
 }
 
 @keyframes pL {
-
     0%,
-    100% {
-        transform: scale(1)
-    }
-
-    50% {
-        transform: scale(1.1)
-    }
+    100% { transform: scale(1) }
+    50% { transform: scale(1.1) }
 }
 
 .ldr-brand {
@@ -154,15 +140,8 @@ body {
 }
 
 @keyframes fU {
-    from {
-        opacity: 0;
-        transform: translateY(13px)
-    }
-
-    to {
-        opacity: 1;
-        transform: none
-    }
+    from { opacity: 0; transform: translateY(13px) }
+    to { opacity: 1; transform: none }
 }
 
 /* FLUID BG */
@@ -215,23 +194,11 @@ body {
 }
 
 @keyframes flB {
-
     0%,
-    100% {
-        transform: translate(0, 0) scale(1)
-    }
-
-    25% {
-        transform: translate(22px, -16px) scale(1.03)
-    }
-
-    50% {
-        transform: translate(-11px, 22px) scale(.98)
-    }
-
-    75% {
-        transform: translate(-18px, -10px) scale(1.02)
-    }
+    100% { transform: translate(0, 0) scale(1) }
+    25% { transform: translate(22px, -16px) scale(1.03) }
+    50% { transform: translate(-11px, 22px) scale(.98) }
+    75% { transform: translate(-18px, -10px) scale(1.02) }
 }
 
 /* SCROLL PROGRESS */
@@ -240,7 +207,7 @@ body {
     top: 0;
     left: 0;
     z-index: 1001;
-    height: 2.5px;
+    height: 3px;
     width: 0%;
     background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
     border-radius: 0 2px 2px 0;
@@ -290,9 +257,7 @@ body {
 }
 
 @keyframes spinO {
-    to {
-        transform: rotate(360deg)
-    }
+    to { transform: rotate(360deg) }
 }
 
 .sw {
@@ -407,13 +372,15 @@ body {
     scrollbar-color: var(--glass-border) transparent
 }
 
-.ls::-webkit-scrollbar {
-    width: 3px
+.ls::-webkit-scrollbar,
+.rs::-webkit-scrollbar {
+    width: 4px
 }
 
-.ls::-webkit-scrollbar-thumb {
+.ls::-webkit-scrollbar-thumb,
+.rs::-webkit-scrollbar-thumb {
     background: var(--glass-border);
-    border-radius: 3px
+    border-radius: 4px
 }
 
 .sb-lbl {
@@ -568,7 +535,8 @@ body {
 /* MAIN */
 .mc {
     padding: 42px 34px 100px;
-    min-width: 0
+    min-width: 0;
+    width: 100%;
 }
 
 .pi {
@@ -747,25 +715,10 @@ body {
     margin-bottom: 12px
 }
 
-.cb {
-    background: rgba(79, 99, 240, .07);
-    border: 1px solid rgba(79, 99, 240, .14)
-}
-
-.ca {
-    background: rgba(218, 166, 55, .08);
-    border: 1px solid rgba(218, 166, 55, .18)
-}
-
-.cp {
-    background: rgba(139, 82, 216, .07);
-    border: 1px solid rgba(139, 82, 216, .14)
-}
-
-.cg {
-    background: rgba(22, 163, 74, .07);
-    border: 1px solid rgba(22, 163, 74, .14)
-}
+.cb { background: rgba(79, 99, 240, .07); border: 1px solid rgba(79, 99, 240, .14) }
+.ca { background: rgba(218, 166, 55, .08); border: 1px solid rgba(218, 166, 55, .18) }
+.cp { background: rgba(139, 82, 216, .07); border: 1px solid rgba(139, 82, 216, .14) }
+.cg { background: rgba(22, 163, 74, .07); border: 1px solid rgba(22, 163, 74, .14) }
 
 .co-ico {
     font-size: 1.15rem;
@@ -914,8 +867,9 @@ body {
     opacity: 0
 }
 
+/* Fix: Greatly expanded to prevent content cropping */
 .aci:hover .acb {
-    max-height: 180px;
+    max-height: 800px;
     opacity: 1
 }
 
@@ -1103,90 +1057,31 @@ body {
     box-shadow: 0 0 5px var(--accent-glow)
 }
 
-.pdr {
-    animation: dr 1.9s linear infinite
-}
-
-.pdl {
-    animation: dl 1.9s linear infinite;
-    animation-delay: -.95s
-}
-
-.pdb {
-    animation: db 1.5s ease-in-out infinite
-}
+.pdr { animation: dr 1.9s linear infinite }
+.pdl { animation: dl 1.9s linear infinite; animation-delay: -.95s }
+.pdb { animation: db 1.5s ease-in-out infinite }
 
 @keyframes dr {
-    0% {
-        left: -4px;
-        opacity: 0
-    }
-
-    8% {
-        opacity: 1
-    }
-
-    92% {
-        opacity: 1
-    }
-
-    100% {
-        left: calc(100% - 4px);
-        opacity: 0
-    }
+    0% { left: -4px; opacity: 0 }
+    8% { opacity: 1 }
+    92% { opacity: 1 }
+    100% { left: calc(100% - 4px); opacity: 0 }
 }
 
 @keyframes dl {
-    0% {
-        right: -4px;
-        left: auto;
-        opacity: 0
-    }
-
-    8% {
-        opacity: 1
-    }
-
-    92% {
-        opacity: 1
-    }
-
-    100% {
-        right: calc(100% - 4px);
-        opacity: 0
-    }
+    0% { right: -4px; left: auto; opacity: 0 }
+    8% { opacity: 1 }
+    92% { opacity: 1 }
+    100% { right: calc(100% - 4px); opacity: 0 }
 }
 
 @keyframes db {
-    0% {
-        left: -4px;
-        opacity: 0
-    }
-
-    20% {
-        left: calc(50% - 4px);
-        opacity: 1
-    }
-
-    40% {
-        left: -4px;
-        opacity: .4
-    }
-
-    60% {
-        left: calc(50% - 4px);
-        opacity: 1
-    }
-
-    80% {
-        left: -4px;
-        opacity: .4
-    }
-
-    100% {
-        left: -4px;
-        opacity: 0
-    }
+    0% { left: -4px; opacity: 0 }
+    20% { left: calc(50% - 4px); opacity: 1 }
+    40% { left: -4px; opacity: .4 }
+    60% { left: calc(50% - 4px); opacity: 1 }
+    80% { left: -4px; opacity: .4 }
+    100% { left: -4px; opacity: 0 }
 }
 
 /* QUIZ — hover panel to reveal */
@@ -1226,12 +1121,10 @@ body {
     opacity: 0
 }
 
-.qw:hover .qt {
-    background: rgba(139, 82, 216, .12)
-}
-
+/* Fix: Expanded for longer text quizzes */
+.qw:hover .qt { background: rgba(139, 82, 216, .12) }
 .qw:hover .qpan {
-    max-height: 420px;
+    max-height: 600px;
     opacity: 1
 }
 
@@ -1380,15 +1273,6 @@ body {
     scrollbar-color: var(--glass-border) transparent
 }
 
-.rs::-webkit-scrollbar {
-    width: 3px
-}
-
-.rs::-webkit-scrollbar-thumb {
-    background: var(--glass-border);
-    border-radius: 3px
-}
-
 .rs-sec {
     margin-bottom: 22px
 }
@@ -1494,8 +1378,9 @@ body {
     opacity: 0
 }
 
+/* Fix: Expanded for deeper glossary content */
 .gi:hover .gd {
-    max-height: 100px;
+    max-height: 300px;
     opacity: 1
 }
 
@@ -1538,23 +1423,16 @@ body {
     font-size: .92rem
 }
 
-.mt-s {
-    margin-top: 8px
-}
+.mt-s { margin-top: 8px }
+.mt-m { margin-top: 15px }
 
-.mt-m {
-    margin-top: 15px
-}
-
+/* Fix: Soft glowing highlight replacing the ugly yellow */
 mark {
-    background: rgba(218, 176, 40, 0);
+    background: var(--accent-glow);
     color: inherit;
-    border-radius: 3px;
-    padding: 1px 2px
-}
-
-[data-theme="dark"] mark {
-    background: rgba(218, 176, 40, 0)
+    border-radius: 4px;
+    padding: 2px 4px;
+    box-shadow: 0 0 6px var(--accent-glow);
 }
 
 /* FAB */
@@ -1563,7 +1441,7 @@ mark {
     bottom: 22px;
     right: 22px;
     z-index: 300;
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 8px;
     align-items: center
@@ -1621,7 +1499,13 @@ mark {
     border-top: 1px solid var(--glass-border);
     align-items: center;
     justify-content: space-around;
-    padding: 0 4px
+    padding: 0 4px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar for clean horizontal nav */
+}
+
+.bn::-webkit-scrollbar {
+    display: none;
 }
 
 .bni {
@@ -1636,6 +1520,7 @@ mark {
     font-size: .58rem;
     font-weight: 500;
     flex: 1;
+    min-width: 65px;
     max-width: 70px;
     transition: all .2s
 }
@@ -1660,7 +1545,7 @@ mark {
     }
 }
 
-@media(max-width:800px) {
+@media(max-width:850px) {
     .pw {
         grid-template-columns: 1fr
     }
@@ -1701,8 +1586,8 @@ mark {
     }
 
     .fab-st {
-        bottom: 70px;
-        right: 13px
+        bottom: 75px;
+        right: 16px
     }
 }
 
