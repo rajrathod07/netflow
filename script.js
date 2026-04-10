@@ -6,24 +6,25 @@
        ========================================== */
     const themeStyle = document.createElement('style');
     themeStyle.textContent = `
-        /* View Transition API for Ripple Effect */
+        /* View Transition API for Ripple Effect (GPU Accelerated) */
         ::view-transition-old(root),
         ::view-transition-new(root) {
             animation: none;
             mix-blend-mode: normal;
         }
-        /* Always keep the NEW theme on top so it can expand over the old one */
+        /* The NEW theme always sits on top and expands over the old theme */
         ::view-transition-old(root) { z-index: 1; }
-        ::view-transition-new(root) { z-index: 2; }
+        ::view-transition-new(root) { z-index: 9999; }
 
-        /* Fallback smooth transition for older browsers */
-        .theme-transitioning * {
-            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, box-shadow 0.5s ease !important;
+        /* CRITICAL FIX: Temporarily disable CSS color transitions while the ripple happens */
+        .theme-in-motion * {
+            transition: none !important;
         }
 
         /* Sun/Moon Icon Spin Animation */
         #themeBtn, #fabTheme {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease !important;
+            will-change: transform, opacity;
         }
         .icon-spin-out {
             transform: scale(0.3) rotate(180deg) !important;
@@ -69,61 +70,59 @@
                 btn.classList.remove('icon-spin-out');
                 btn.classList.add('icon-spin-in');
                 setTimeout(() => btn.classList.remove('icon-spin-in'), 400);
-            }, 150); // swap icon at mid-point
+            }, 150); 
         });
 
-        // 2. Trigger the page background ripple effect
+        // 2. Trigger the fluid background ripple effect
         setTimeout(() => {
             if (!document.startViewTransition) {
-                // Fallback: Smooth CSS crossfade for older browsers
-                document.documentElement.classList.add('theme-transitioning');
+                // Instant fallback for very old browsers
                 applyTheme(isDark);
-                setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 500);
                 return;
             }
 
-            // Get click coordinates (default to top right if triggered without mouse)
+            // Get exact mouse click coordinates (or default to top-right if triggered via keyboard)
             const btnX = e && e.clientX ? e.clientX : window.innerWidth - 50;
             const btnY = e && e.clientY ? e.clientY : 50;
+
+            // Logic: Light->Dark starts at button. Dark->Light starts at bottom-right corner.
+            const startX = isDark ? btnX : window.innerWidth;
+            const startY = isDark ? btnY : window.innerHeight;
+            
+            // Calculate how large the circle needs to be to cover the whole screen
+            const radius = Math.hypot(
+                Math.max(startX, window.innerWidth - startX), 
+                Math.max(startY, window.innerHeight - startY)
+            );
+
+            // Freeze normal CSS transitions so the snapshot works instantly
+            document.documentElement.classList.add('theme-in-motion');
 
             const transition = document.startViewTransition(() => {
                 applyTheme(isDark);
             });
 
             transition.ready.then(() => {
-                let startX, startY, radius;
-
-                if (isDark) {
-                    // Light -> Dark: Expanding circle starts exactly from the clicked button
-                    startX = btnX;
-                    startY = btnY;
-                    radius = Math.hypot(
-                        Math.max(startX, window.innerWidth - startX), 
-                        Math.max(startY, window.innerHeight - startY)
-                    );
-                } else {
-                    // Dark -> Light: Expanding circle sweeps in from the absolute bottom right corner
-                    startX = window.innerWidth;
-                    startY = window.innerHeight;
-                    radius = Math.hypot(window.innerWidth, window.innerHeight);
-                }
-
-                const clipPath = [
-                    `circle(0px at ${startX}px ${startY}px)`,
-                    `circle(${radius}px at ${startX}px ${startY}px)`
-                ];
-                
-                // Animate the new theme sweeping over the old theme
+                // Animate the expanding circle
                 document.documentElement.animate(
-                    { clipPath: clipPath },
+                    [
+                        { clipPath: `circle(0px at ${startX}px ${startY}px)` },
+                        { clipPath: `circle(${radius}px at ${startX}px ${startY}px)` }
+                    ],
                     {
-                        duration: 800, // Smooth, slightly slower duration for a liquid feel
-                        easing: 'cubic-bezier(0.25, 1, 0.30, 1)', // Fluid easing curve
+                        duration: 700, // Smooth, liquid duration
+                        easing: 'cubic-bezier(0.25, 1, 0.30, 1)', 
                         pseudoElement: '::view-transition-new(root)'
                     }
                 );
             });
-        }, 100); // Slight delay to sync the background ripple with the icon spin
+
+            // Unfreeze CSS transitions once the ripple finishes
+            transition.finished.then(() => {
+                document.documentElement.classList.remove('theme-in-motion');
+            });
+
+        }, 50); // Tiny delay to sync the background ripple with the button spin
     }
     
     const hBtn = document.getElementById('themeBtn');
@@ -154,7 +153,7 @@
     });
 
     /* ==========================================
-       3. GLOBAL UTILS & ANIMATIONS
+       3. GLOBAL UTILS & DOM CACHING
        ========================================== */
     const chapters = Array.from(document.querySelectorAll('.chapter'));
     const TOTAL = chapters.length;
@@ -162,14 +161,22 @@
     const chTitles = chapters.map(c => c.querySelector('h2').textContent);
     const NAV_H = () => parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 62;
 
+    // Pre-calculate heights to prevent scroll lag
+    let chapterOffsets = [];
+    function calcOffsets() {
+        chapterOffsets = chapters.map(c => ({ id: c.id, top: c.offsetTop }));
+    }
+    window.addEventListener('load', calcOffsets);
+    window.addEventListener('resize', calcOffsets);
+
     function smoothScrollTo(yPos) {
         window.scrollTo({ top: yPos, behavior: 'smooth' });
     }
 
     function scrollToElement(id) {
-        const el = document.getElementById(id); 
-        if (!el) return;
-        const top = el.getBoundingClientRect().top + window.scrollY - NAV_H() - 40;
+        const targetObj = chapterOffsets.find(c => c.id === id);
+        if (!targetObj) return;
+        const top = targetObj.top - NAV_H() - 40;
         smoothScrollTo(top);
     }
 
@@ -306,11 +313,13 @@
     }
     
     window.addEventListener('scroll', () => {
-        let currentId = chapters[0].id;
+        if(chapterOffsets.length === 0) return;
+        
+        let currentId = chapterOffsets[0].id;
         const scrollPos = window.scrollY + NAV_H() + 150; 
         
-        for (let c of chapters) {
-            if (c.offsetTop <= scrollPos) {
+        for (let c of chapterOffsets) {
+            if (c.top <= scrollPos) {
                 currentId = c.id;
             }
         }
@@ -329,18 +338,21 @@
     chapters.forEach(s => secObs.observe(s));
 
     /* ==========================================
-       7. DYNAMIC CELEBRATION INJECTION
+       7. DYNAMIC CELEBRATION INJECTION (Elegant Style)
        ========================================== */
     function injectCelebration() {
         const style = document.createElement('style');
         style.textContent = `
-            #nfFinish { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: opacity 0.5s ease; overflow: hidden; }
+            #nfFinish { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: opacity 0.5s ease; overflow: hidden; }
             #nfFinish.show { opacity: 1; pointer-events: all; }
+            
+            /* Rings */
             .nf-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid var(--accent); opacity: 0; pointer-events: none;}
-            #nfFinish.show .nf-ring-1 { animation: nfRing 2s ease-out forwards; }
-            #nfFinish.show .nf-ring-2 { animation: nfRing 2.5s ease-out 0.2s forwards; border-color: var(--accent2); }
-            #nfFinish.show .nf-ring-3 { animation: nfRing 3s ease-out 0.4s forwards; border-color: var(--accent3); }
+            #nfFinish.show .nf-ring-1 { animation: nfRing 2.5s ease-out forwards; }
+            #nfFinish.show .nf-ring-2 { animation: nfRing 3s ease-out 0.2s forwards; border-color: var(--accent2); }
             @keyframes nfRing { 0% { width: 0; height: 0; opacity: 1; border-width: 15px; } 100% { width: 150vw; height: 150vw; opacity: 0; border-width: 1px; } }
+            
+            /* Side Bounces */
             .nf-bounce { position: absolute; font-size: 6rem; opacity: 0; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); pointer-events: none;}
             .nf-bounce-l { top: 50%; left: -150px; }
             .nf-bounce-r { top: 50%; right: -150px; }
@@ -348,23 +360,50 @@
             #nfFinish.show .nf-bounce-r { animation: nfSpringR 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.7s forwards; }
             @keyframes nfSpringL { 0% { left: -150px; opacity: 0; transform: translateY(-50%) rotate(-45deg) scale(0.5); } 100% { left: 10%; opacity: 1; transform: translateY(-50%) rotate(15deg) scale(1); } }
             @keyframes nfSpringR { 0% { right: -150px; opacity: 0; transform: translateY(-50%) rotate(45deg) scale(0.5); } 100% { right: 10%; opacity: 1; transform: translateY(-50%) rotate(-15deg) scale(1); } }
-            .nf-card { text-align: center; z-index: 10; transform: scale(0.8) translateY(30px); opacity: 0; background: #ffffff; padding: 12px; border-radius: 8px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); max-width: 550px; width: 90%; color: #111; }
-            .nf-card-inner { border: 2px solid rgba(79, 99, 240, 0.3); outline: 1px solid rgba(79, 99, 240, 0.1); outline-offset: -4px; padding: 40px 30px 45px; border-radius: 4px; background: #fffafa; }
+            
+            /* ELEGANT FORMAT CARD */
+            .nf-card { 
+                text-align: center; z-index: 10; transform: scale(0.8) translateY(30px); opacity: 0; 
+                background: #ffffff; 
+                padding: 16px; 
+                border-radius: 6px; 
+                box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 100px rgba(79, 99, 240, 0.15); 
+                max-width: 600px; width: 92%; 
+                color: #111; 
+            }
+            .nf-card-inner { 
+                border: 2px solid #e5dfd3; 
+                outline: 1px solid #e5dfd3; 
+                outline-offset: -6px; 
+                padding: 50px 40px; 
+                background: linear-gradient(135deg, #ffffff 0%, #fcfbf9 100%); 
+                border-radius: 2px;
+            }
             #nfFinish.show .nf-card { animation: nfPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.9s forwards; }
             @keyframes nfPop { to { transform: scale(1) translateY(0); opacity: 1; } }
-            .nf-cert-logo { font-size: 2.8rem; margin-bottom: 15px; }
-            .nf-title { font-family: 'DM Serif Display', serif; font-size: 2.6rem; color: #111; margin-bottom: 18px; line-height: 1.1; letter-spacing: -0.02em; }
-            .nf-cert-line { width: 80px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); margin: 0 auto 20px; border-radius: 2px;}
-            .nf-msg { font-size: 1.05rem; color: #444; line-height: 1.7; margin-bottom: 35px; font-family: 'DM Sans', sans-serif; }
-            .nf-btn { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: transform 0.3s var(--ease), box-shadow 0.3s; box-shadow: 0 8px 25px var(--accent-glow); font-family: 'DM Sans', sans-serif;}
-            .nf-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 15px 35px var(--accent-glow); }
+            
+            .nf-cert-seal { font-size: 3.5rem; margin-bottom: 15px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08)); line-height: 1; }
+            .nf-cert-header { font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.25em; font-size: 0.75rem; color: #888; margin-bottom: 15px; font-weight: 600; }
+            .nf-title { font-family: 'DM Serif Display', serif; font-size: 3rem; color: #1a1a1a; margin-bottom: 20px; line-height: 1.1; letter-spacing: -0.02em; }
+            .nf-cert-line { width: 100px; height: 2px; background: #e5dfd3; margin: 0 auto 25px; }
+            .nf-msg { font-size: 1.1rem; color: #4a4a4a; line-height: 1.7; margin-bottom: 35px; font-family: 'DM Sans', sans-serif; padding: 0 15px; }
+            .nf-msg strong { color: #111; font-weight: 600; }
+            
+            .nf-btn { background: #1a1a1a; color: #fff; border: none; padding: 14px 42px; border-radius: 50px; font-size: 1.05rem; font-weight: 500; cursor: pointer; transition: all 0.3s var(--ease); font-family: 'DM Sans', sans-serif; box-shadow: 0 8px 20px rgba(0,0,0,0.15); letter-spacing: 0.02em;}
+            .nf-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.25); background: var(--accent); }
+            
+            /* Mobile fixes */
             @media(max-width: 900px) { 
                 .nf-bounce { font-size: 4rem; }
                 .nf-bounce-l { left: 5%; top: 15%; animation-name: nfSpringLMob !important; } 
                 .nf-bounce-r { right: 5%; top: 85%; animation-name: nfSpringRMob !important; } 
                 @keyframes nfSpringLMob { 0% { top: -100px; opacity: 0; } 100% { top: 12%; opacity: 1; transform: rotate(15deg); } } 
                 @keyframes nfSpringRMob { 0% { top: 120%; opacity: 0; } 100% { top: 88%; opacity: 1; transform: rotate(-15deg); } } 
-                .nf-card-inner { padding: 30px 20px 35px; } .nf-title { font-size: 2.2rem; } .nf-msg { font-size: 0.95rem; }
+                .nf-card { padding: 12px; }
+                .nf-card-inner { padding: 40px 20px; } 
+                .nf-title { font-size: 2.2rem; } 
+                .nf-msg { font-size: 0.95rem; padding: 0;} 
+                .nf-cert-seal { font-size: 3rem; }
             }
         `;
         document.head.appendChild(style);
@@ -374,15 +413,15 @@
         overlay.innerHTML = `
             <div class="nf-ring nf-ring-1"></div>
             <div class="nf-ring nf-ring-2"></div>
-            <div class="nf-ring nf-ring-3"></div>
             <div class="nf-bounce nf-bounce-l">🚀</div>
             <div class="nf-bounce nf-bounce-r">🏆</div>
             <div class="nf-card">
                 <div class="nf-card-inner">
-                    <div class="nf-cert-logo">🌐</div>
-                    <div class="nf-title">Course Complete</div>
+                    <div class="nf-cert-seal">🎖️</div>
+                    <div class="nf-cert-header">Course Concluded</div>
+                    <div class="nf-title">Networking Fundamentals</div>
                     <div class="nf-cert-line"></div>
-                    <div class="nf-msg">This acknowledges that you have successfully mastered the foundational concepts of computer networking, digital infrastructure, and basic security.<br><br><strong>Well done!</strong></div>
+                    <div class="nf-msg">This formally acknowledges that you have successfully mastered the core concepts of computer networking, digital infrastructure, and network security.<br><br><strong>Outstanding Achievement</strong></div>
                     <button class="nf-btn" id="nfCloseBtn">Continue Journey</button>
                 </div>
             </div>
@@ -602,6 +641,7 @@
         
         if (firstMatchNode) {
             setTimeout(() => {
+                calcOffsets();
                 const top = firstMatchNode.getBoundingClientRect().top + window.scrollY - NAV_H() - 100;
                 smoothScrollTo(top);
             }, 50);
