@@ -1,56 +1,42 @@
-🌐 NetFlow — Networking Fundamentals
-🔴 Live Site: https://rajrathod07.github.io/netflow/
+# NetFlow — Networking Fundamentals 🌐
 
-A fluid, comprehensive, and highly interactive web guide taking you from the absolute basics of data transfer to advanced global infrastructure and cybersecurity. Built with a modern glassmorphism interface, this project serves as a dynamic "Zero to Hero" study reference for IT and cybersecurity.
+**🔴 Live Site:** [https://rajrathod07.github.io/netflow/](https://rajrathod07.github.io/netflow/)
 
-🌱 A Living Notebook
-This project began as a personal study tool for cybersecurity and penetration testing. It has since evolved into a full 20-chapter interactive textbook that scales up right alongside my skills—designed to make dense, heavy networking concepts feel light, punchy, and visually alive.
+An interactive, fluid web guide designed to break down the core networking concepts. Built with a modern glassmorphism interface, this project serves as a dynamic study reference for foundational networking rules, topologies, and protocols.
 
-✨ Key Features
-🏆 Interactive Progress & Certification: Mark concepts as "done" to track your learning (saves locally to your browser). Complete all 20 chapters to unlock a dynamic, animated Certificate of Completion.
+## 🌱 A Living Notebook
 
-🌗 Liquid Theme Toggle: Features a buttery-smooth dark/light mode toggle utilizing the modern View Transitions API for a gorgeous expanding circular ripple effect.
+This project is a continuous work in progress. As I study cybersecurity and penetration testing, I update this repository with new networking concepts. It serves as my personal, interactive textbook that scales up right alongside my skills.
 
-🔍 Advanced Live Search: Instantly filter chapters and highlight specific keywords across the DOM in real-time as you type.
+## 📖 Current Chapters Included
 
-✨ "Alive" Visuals: Animated SVG network topologies that simulate flowing data, breathing icons, and interactive hover states.
+The guide currently covers the following foundational topics:
+* **Networking Basics:** Understanding nodes and communication links.
+* **Devices:** The difference between end devices (laptops, servers) and intermediary devices (routers, switches).
+* **Network Characteristics:** Fault tolerance, scalability, QoS, and the CIA Triad (Security).
+* **Data Flow Topologies:** Simplex, Half-Duplex, and Full-Duplex communication.
+* **Protocols:** The rules of communication, including encapsulation and delivery methods (Unicast, Multicast, Broadcast).
 
-📱 Fully Responsive: Adapts seamlessly from desktop monitors to mobile screens, featuring a dynamic, scroll-tracking mobile bottom navigation bar.
+## ✨ Live Features
 
-🧠 Knowledge Checks: Built-in interactive Q&A sections at the end of every chapter to test retention.
+* **Modern Glassmorphism UI:** Frosted glass cards and animated background blobs for a clean study environment.
+* **Interactive Progress Tracking:** Mark concepts as "done" to track your learning progress (saves locally to your browser).
+* **Live Search:** Instantly filter chapters and highlight keywords (e.g., "router", "duplex") as you type.
+* **Dark / Light Mode:** Fully themed environments that automatically respect system preferences or manual toggles.
+* **Knowledge Checks:** Built-in interactive Q&A sections to test retention at the end of chapters.
+* **Fully Responsive:** Adapts seamlessly from desktop monitors to mobile screens, including a mobile-friendly bottom navigation bar.
 
-📚 The Curriculum (20 Chapters)
-The guide is structured into 6 logical levels, building from physical cables up to network security:
+## 💻 Tech Stack
 
-Level 1: Fundamentals — What is a network?, Nodes, Packets, LAN vs. WAN.
-
-Level 2: Hardware & Layout — Copper vs. Fiber Optic Cabling, Topologies (Star, Mesh, Bus), Switches, Routers, Modems.
-
-Level 3: Rules & Addressing — Data Flow (Duplex), Protocols (TCP/UDP), MAC vs. IP vs. Ports, NAT, Subnetting, DHCP, DNS.
-
-Level 4: Advanced Concepts — Network Metrics (Bandwidth, Latency, Jitter, Packet Loss), The 7-Layer OSI Model.
-
-Level 5: Global Infrastructure — Wi-Fi Frequencies & Channels, Undersea Cables & ISPs, Data Centers & The Cloud, Internet of Things (IoT).
-
-Level 6: Security & Practice — Firewalls & Common Threats (DDoS, MitM), VPNs & Proxies, CLI Troubleshooting Tools (Ping, Traceroute, ipconfig).
-
-💻 Tech Stack
-Built entirely with pure, vanilla web technologies—no frameworks, zero bloat, running at 60FPS:
-
-HTML5: Semantic structure and accessible content layout.
-
-CSS3: Custom CSS variables, Grid/Flexbox, advanced backdrop-filters (Glassmorphism), and keyframe animations.
-
-Vanilla JavaScript (ES6+): * IntersectionObserver for zero-lag scroll-spy navigation.
-
-View Transitions API for GPU-accelerated theme switching.
-
-localStorage API for persistent progress tracking.
-
-Dynamic DOM manipulation for automated sidebar generation and search highlighting.
+Built entirely with pure, vanilla web technologies:
+* **HTML5:** Semantic structure and accessible details/summary accordions.
+* **CSS3:** Custom properties, Flexbox, CSS Grid, and advanced backdrop-filters.
+* **Vanilla JavaScript (ES6+):** DOM manipulation, Intersection Observers for active scroll tracking, and the `localStorage` API.
 
 👤 Author
-Raj Rathod GitHub: @rajrathod07 | LinkedIn: Raj Rathod
+Raj Rathod
+
+GitHub: @rajrathod07
 
 📝 License
 This project is open-source and available under the MIT License.
